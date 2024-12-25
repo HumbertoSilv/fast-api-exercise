@@ -2,17 +2,6 @@ from http import HTTPStatus
 
 from fast_api_exercise.schemas import UserPublic
 
-# def test_root_deve_retornar_ok_e_ola_mundo():
-#     # arrange
-#     client = TestClient(app)
-
-#     # act
-#     response = client.get('/')
-
-#     # assert
-#     assert response.status_code == HTTPStatus.OK
-#     assert response.json() == {'message': 'hello!'}
-
 
 def test_create_user(client):
     # act
@@ -128,15 +117,15 @@ def test_update_user(client, user, token):
     }
 
 
-def test_update_user_with_forbidden_error(client, token):
+def test_update_user_with_wrong_user(client, other_user, token):
     # act
     response = client.put(
-        '/users/999',
+        f'/users/{other_user.id}',
         headers={'Authorization': f'Bearer {token}'},
         json={
             'username': 'bob',
             'email': 'bob@example.com',
-            'password': 'mynewpassword',
+            'password': 'my_new_password',
         },
     )
 
@@ -145,24 +134,13 @@ def test_update_user_with_forbidden_error(client, token):
     assert response.json() == {'detail': 'Not enough permissions'}
 
 
-def test_update_integrity_error(client, user, token):
+def test_update_integrity_error(client, user, other_user, token):
     # act
-    # Insert fausto
-    client.post(
-        '/users',
-        json={
-            'username': 'fausto',
-            'email': 'fausto@example.com',
-            'password': 'secret',
-        },
-    )
-
-    # Changing the fixture user to fausto
     response = client.put(
         f'/users/{user.id}',
         headers={'Authorization': f'Bearer {token}'},
         json={
-            'username': 'fausto',
+            'username': other_user.username,
             'email': 'bob@example.com',
             'password': 'mynewpassword',
         },
@@ -184,10 +162,10 @@ def test_delete_user(client, user, token):
     assert response.json() == {'message': 'User deleted'}
 
 
-def test_delete_user_with_forbidden_error(client, token):
+def test_delete_user_with_wrong_user(client, other_user, token):
     # act
     response = client.delete(
-        '/users/999',
+        f'/users/{other_user.id}',
         headers={'Authorization': f'Bearer {token}'},
     )
 

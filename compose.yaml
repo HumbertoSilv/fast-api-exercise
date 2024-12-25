@@ -1,0 +1,30 @@
+services:
+  fast_api_exercise_database:
+    image: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  fast_api_exercise_app:
+    image: fast-api-exercise
+    entrypoint: ./entrypoint.sh # remover o .sh e retestar
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - fast_api_exercise_database
+    environment:
+      DATABASE_URL: postgresql+psycopg://app_user:app_password@fast_api_exercise_database:5432/app_db
+
+volumes:
+  pgdata:
