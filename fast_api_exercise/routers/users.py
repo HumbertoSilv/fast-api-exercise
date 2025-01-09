@@ -19,6 +19,7 @@ from fast_api_exercise.security import (
     get_current_user,
     get_password_hash,
 )
+from fast_api_exercise.settings import logger
 
 router = APIRouter(prefix='/users', tags=['users'])
 
@@ -28,6 +29,8 @@ T_CurrentUser = Annotated[User, Depends(get_current_user)]
 
 @router.post('/', status_code=HTTPStatus.CREATED, response_model=UserPublic)
 def create_user(user: UserSchema, session: T_Session):
+    logger.debug(f'Starting user creation - {user.email} - {user.username}')
+
     db_user = session.scalar(
         select(User).where(
             (User.username == user.username) | (User.email == user.email)
@@ -36,11 +39,15 @@ def create_user(user: UserSchema, session: T_Session):
 
     if db_user:
         if db_user.username == user.username:
+            logger.error(f'Username already exists - {user.username}')
+
             raise HTTPException(
                 status_code=HTTPStatus.BAD_REQUEST,
                 detail='Username already exists',
             )
         elif db_user.email == user.email:
+            logger.error(f'Email already exists - {user.email}')
+
             raise HTTPException(
                 status_code=HTTPStatus.BAD_REQUEST,
                 detail='Email already exists',
@@ -56,6 +63,7 @@ def create_user(user: UserSchema, session: T_Session):
     session.add(db_user)
     session.commit()
     session.refresh(db_user)
+    logger.info(f'User created - {db_user.id}')
 
     return db_user
 
@@ -64,6 +72,7 @@ def create_user(user: UserSchema, session: T_Session):
 def read_users(
     session: T_Session, filter_users: Annotated[FilterPage, Query()]
 ):
+    logger.debug('Starting listing of users')
     users = session.scalars(
         select(User).offset(filter_users.offset).limit(filter_users.limit)
     ).all()
@@ -73,9 +82,13 @@ def read_users(
 
 @router.get('/{user_id}', response_model=UserPublic)
 def read_user(user_id: int, session: T_Session):
+    logger.debug(f'Starting user search - {user_id}')
+
     db_user = session.scalar(select(User).where(User.id == user_id))
 
     if not db_user:
+        logger.error(f'User not found - {user_id}')
+
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail='User not found'
         )
@@ -90,7 +103,11 @@ def update_user(
     session: T_Session,
     current_user: T_CurrentUser,
 ):
+    logger.debug(f'Starting user update - {user_id} - {user}')
+
     if current_user.id != user_id:
+        logger.error(f'Not enough permissions - {user_id}')
+
         raise HTTPException(
             status_code=HTTPStatus.FORBIDDEN, detail='Not enough permissions'
         )
@@ -105,6 +122,8 @@ def update_user(
         return current_user
 
     except IntegrityError:
+        logger.error(f'Username or Email already exists - {user}')
+
         raise HTTPException(
             status_code=HTTPStatus.CONFLICT,
             detail='Username or Email already exists',
@@ -117,7 +136,11 @@ def delete_user(
     session: T_Session,
     current_user: T_CurrentUser,
 ):
+    logger.debug(f'Starting user deletion - {user_id}')
+
     if current_user.id != user_id:
+        logger.error(f'Not enough permissions - {user_id}')
+
         raise HTTPException(
             status_code=HTTPStatus.FORBIDDEN, detail='Not enough permissions'
         )

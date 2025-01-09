@@ -25,6 +25,9 @@ services:
       - fast_api_exercise_database
     environment:
       DATABASE_URL: postgresql+psycopg://app_user:app_password@fast_api_exercise_database:5432/app_db
+      SECRET_KEY: ${SECRET_KEY}
+      ALGORITHM: ${ALGORITHM}
+      ACCESS_TOKEN_EXPIRES_MINUTES: ${ACCESS_TOKEN_EXPIRES_MINUTES}
 
 volumes:
   pgdata:

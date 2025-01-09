@@ -2,16 +2,11 @@ from http import HTTPStatus
 
 from fast_api_exercise.schemas import UserPublic
 
-# def test_root_deve_retornar_ok_e_ola_mundo():
-#     # arrange
-#     client = TestClient(app)
-
-#     # act
-#     response = client.get('/')
-
-#     # assert
-#     assert response.status_code == HTTPStatus.OK
-#     assert response.json() == {'message': 'hello!'}
+# test structure
+# - Organizar(Arrange)
+# - Agir(Act)
+# - Afirmar(Assert)
+# - Teardown
 
 
 def test_create_user(client):

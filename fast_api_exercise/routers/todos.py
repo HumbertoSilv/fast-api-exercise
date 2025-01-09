@@ -16,6 +16,7 @@ from fast_api_exercise.schemas import (
     TodoUpdate,
 )
 from fast_api_exercise.security import get_current_user
+from fast_api_exercise.settings import logger
 
 T_Session = Annotated[Session, Depends(get_session)]
 T_CurrentUser = Annotated[User, Depends(get_current_user)]
@@ -30,6 +31,8 @@ def create_todo(
     user: T_CurrentUser,
     session: T_Session,
 ):
+    logger.debug(f'Starting todo creation - {todo}')
+
     db_todo = Todo(
         title=todo.title,
         description=todo.description,
@@ -50,6 +53,8 @@ def get_todos(
     todo_filter: T_filter,
     user: T_CurrentUser,
 ):
+    logger.debug(f'Starting todo listing - {todo_filter}')
+
     query = select(Todo).where(Todo.user_id == user.id)
 
     if todo_filter.title:
@@ -77,11 +82,15 @@ def patch_todo(
     session: T_Session,
     user: T_CurrentUser,
 ):
+    logger.debug(f'Starting todo update - {todo_id} - {todo}')
+
     db_todo = session.scalar(
         select(Todo).where(Todo.user_id == user.id, Todo.id == todo_id)
     )
 
     if not db_todo:
+        logger.error(f'Todo not found - {todo_id}')
+
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail='Todo not found.'
         )
@@ -98,11 +107,15 @@ def patch_todo(
 
 @router.delete('/{todo_id}', response_model=Message)
 def delete_todo(todo_id: int, session: T_Session, user: T_CurrentUser):
+    logger.debug(f'Starting todo deletion - {todo_id}')
+
     todo = session.scalar(
         select(Todo).where(Todo.user_id == user.id, Todo.id == todo_id)
     )
 
     if not todo:
+        logger.error(f'Todo not found - {todo_id}')
+
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail='Todo not found.'
         )

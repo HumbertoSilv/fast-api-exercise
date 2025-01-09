@@ -1,4 +1,10 @@
+import logging
+import logging.config
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+logging.config.fileConfig('logging.ini')
+logger = logging.getLogger('uvicorn')
 
 
 class Settings(BaseSettings):
