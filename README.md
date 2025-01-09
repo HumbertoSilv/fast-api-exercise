@@ -32,11 +32,6 @@ A aplicação foi construída usando Docker Compose, então basta ter o mesmo in
 ### **TODO de novas implementações:**
 
 - [ ] Otimização de alguns testes usando parametrização (https://docs.pytest.org/en/stable/example/parametrize.html)
-- [ ] Implementar logs na aplicação (https://www.youtube.com/watch?v=PGAOqAWuwC0 - https://docs.python.org/3/library/logging.html)
 - [ ] Implementar Asyncio
-- [ ]
-- [ ]
-- [ ]
-- [ ]
-- [ ]
+
 

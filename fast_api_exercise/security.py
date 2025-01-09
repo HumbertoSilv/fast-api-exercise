@@ -9,6 +9,7 @@ from pwdlib import PasswordHash
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from fast_api_exercise.settings import logger
 from fast_api_exercise.database import get_session
 from fast_api_exercise.models.user import User
 from fast_api_exercise.schemas import TokenData
@@ -47,6 +48,8 @@ def get_current_user(
     session: Session = Depends(get_session),
     token: str = Depends(oauth2_scheme),
 ) -> User:
+    logger.debug('Getting the current user')
+
     try:
         payload = decode(
             token, settings.SECRET_KEY, algorithms=settings.ALGORITHM
@@ -54,6 +57,8 @@ def get_current_user(
         username: str = payload.get('sub')
 
         if not username:
+            logger.error('Could not validate credentials')
+
             raise HTTPException(
                 status_code=HTTPStatus.UNAUTHORIZED,
                 detail='Could not validate credentials',
@@ -63,6 +68,8 @@ def get_current_user(
         token_data = TokenData(username=username)
 
     except DecodeError:
+        logger.error('Could not validate credentials')
+
         raise HTTPException(
             status_code=HTTPStatus.UNAUTHORIZED,
             detail='Could not validate credentials',
@@ -70,6 +77,8 @@ def get_current_user(
         )
 
     except ExpiredSignatureError:
+        logger.error('Signature has expired')
+
         raise HTTPException(
             status_code=HTTPStatus.UNAUTHORIZED,
             detail='Signature has expired',
@@ -81,6 +90,8 @@ def get_current_user(
     )
 
     if not user:
+        logger.error('Could not validate credentials')
+
         raise HTTPException(
             status_code=HTTPStatus.UNAUTHORIZED,
             detail='Could not validate credentials',
