@@ -9,11 +9,10 @@ from pwdlib import PasswordHash
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from fast_api_exercise.settings import logger
 from fast_api_exercise.database import get_session
 from fast_api_exercise.models.user import User
 from fast_api_exercise.schemas import TokenData
-from fast_api_exercise.settings import Settings
+from fast_api_exercise.settings import Settings, logger
 
 settings = Settings()
 pwd_context = PasswordHash.recommended()

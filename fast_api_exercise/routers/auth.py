@@ -6,7 +6,6 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from fast_api_exercise.settings import logger
 from fast_api_exercise.database import get_session
 from fast_api_exercise.models.user import User
 from fast_api_exercise.schemas import Token
@@ -15,6 +14,7 @@ from fast_api_exercise.security import (
     get_current_user,
     verify_password,
 )
+from fast_api_exercise.settings import logger
 
 router = APIRouter(prefix='/auth', tags=['auth'])
 

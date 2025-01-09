@@ -5,7 +5,6 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from fast_api_exercise.settings import logger
 from fast_api_exercise.database import get_session
 from fast_api_exercise.models.user import Todo, User
 from fast_api_exercise.schemas import (
@@ -17,6 +16,7 @@ from fast_api_exercise.schemas import (
     TodoUpdate,
 )
 from fast_api_exercise.security import get_current_user
+from fast_api_exercise.settings import logger
 
 T_Session = Annotated[Session, Depends(get_session)]
 T_CurrentUser = Annotated[User, Depends(get_current_user)]

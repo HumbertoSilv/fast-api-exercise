@@ -6,7 +6,6 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from fast_api_exercise.settings import logger
 from fast_api_exercise.database import get_session
 from fast_api_exercise.models.user import User
 from fast_api_exercise.schemas import (
@@ -20,6 +19,7 @@ from fast_api_exercise.security import (
     get_current_user,
     get_password_hash,
 )
+from fast_api_exercise.settings import logger
 
 router = APIRouter(prefix='/users', tags=['users'])
 
