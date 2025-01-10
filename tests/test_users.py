@@ -1,9 +1,11 @@
 from http import HTTPStatus
 
 from fast_api_exercise.schemas import UserPublic
+import pytest
 
 
-def test_create_user(client):
+@pytest.mark.asyncio
+async def test_create_user(client):
     # act
     response = client.post(
         '/users/',
@@ -22,7 +24,8 @@ def test_create_user(client):
     }
 
 
-def test_crete_user_with_username_error(client, user):
+@pytest.mark.asyncio
+async def test_crete_user_with_username_error(client, user):
     # act
     response = client.post(
         '/users',
@@ -38,7 +41,8 @@ def test_crete_user_with_username_error(client, user):
     assert response.json() == {'detail': 'Username already exists'}
 
 
-def test_crete_user_with_email_error(client, user):
+@pytest.mark.asyncio
+async def test_crete_user_with_email_error(client, user):
     # act
     response = client.post(
         '/users',

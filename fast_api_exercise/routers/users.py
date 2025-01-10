@@ -28,7 +28,7 @@ T_CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
 @router.post('/', status_code=HTTPStatus.CREATED, response_model=UserPublic)
-def create_user(user: UserSchema, session: T_Session):
+async def create_user(user: UserSchema, session: T_Session):
     logger.debug(f'Starting user creation - {user.email} - {user.username}')
 
     db_user = session.scalar(
